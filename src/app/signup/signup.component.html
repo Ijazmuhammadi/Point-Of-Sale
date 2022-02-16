@@ -1,0 +1,56 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <form [formGroup]="service.form" (ngSubmit)="register()">
+
+                <div class="form-group">
+                    <label for="name" class="fa fa-user"></label>
+                    <input type="text" placeholder="Enter Your Name" formControlName="FullName">
+                    <span class="text-danger" *ngIf="service.form.controls.FullName.errors && service.form.controls.FullName.touched">
+                        <br>Name is Required
+                    </span>
+                </div>
+                <div class="form-group">
+                    <label for="email" class="fa fa-envelope"></label>
+                    <input type="email" placeholder="Email Address" formControlName="UserName">
+                    <span class="text-danger" *ngIf="service.form.controls.UserName.errors && service.form.controls.UserName.touched">
+                        <br>Invalid UserName 
+                    </span>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="fa fa-lock"></label>
+                    <input type="password" placeholder="Password" formControlName="Password">
+                    <span class="text-danger" *ngIf="service.form.controls.Password.errors && service.form.controls.Password.touched">
+                        <br>Atleast 6 character Password is Required
+                    </span>
+                </div>
+                <div class="form-group">
+                    <label for="mobileNumber" class="fa fa-mobile"></label>
+                    <input type="tel" placeholder="Mobile Number" formControlName="Mobile">
+                    <span class="text-danger" *ngIf="service.form.controls.Mobile.errors && service.form.controls.Mobile.touched">
+                        <br>Invalid Mobile Number
+                    </span>
+                </div>
+
+                <!-- <div class="form-group">
+                    <label for="UserType" class="fa fa-user"></label>
+                    <input type="tel" placeholder="UserType" formControlName="UserType">
+                    <span class="text-danger" *ngIf="service.form.controls.UserType.errors && service.form.controls.UserType.touched">
+                        <br>Invalid UserType
+                    </span>
+                </div> -->
+
+                <div class="text-center">
+                    <button id="submitButton" type="submit" class="btn btn-primary" [disabled]="!service.form.valid">
+                        Register
+                    </button>
+                </div>
+
+                <div class="text-success" *ngIf="successMessage">
+                    {{service.form.value.email}} mailId is {{successMessage}}
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>

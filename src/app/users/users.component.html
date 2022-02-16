@@ -1,0 +1,126 @@
+<div class="search-div">
+    <button [disabled]="role==='NormalUser'" mat-raised-button (click)="clickAddEmployee()" data-toggle="modal" data-target="#exampleModal">
+       <mat-icon>add</mat-icon>Create New
+    </button> 
+    <mat-form-field class="search-form-field" floatLabel="never">
+      <input matInput [(ngModel)]="searchKey" placeholder="Search" autocomplete="off" (keyup)="applyFilter()">
+      <button mat-button matSuffix mat-icon-button aria-label="Clear"*ngIf="searchKey"  (click)="onSearchClear()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+  
+<mat-card class="font-weight-bold">Users Data</mat-card>
+  <div class="mat-elevation-z8">
+    <mat-table [dataSource]="listData"  matSort>
+      <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef  mat-sort-header>customer Id</mat-header-cell>
+        <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="fullName">
+        <mat-header-cell *matHeaderCellDef  mat-sort-header>Full Name</mat-header-cell>
+        <mat-cell *matCellDef="let element">{{element.fullName}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="userName">
+        <mat-header-cell *matHeaderCellDef  mat-sort-header>userName</mat-header-cell>
+        <mat-cell *matCellDef="let element">{{element.userName}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="mobile">
+        <mat-header-cell *matHeaderCellDef  mat-sort-header>Contact #</mat-header-cell>
+        <mat-cell *matCellDef="let element">{{element.mobile}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="userType">
+        <mat-header-cell *matHeaderCellDef  mat-sort-header>UserType</mat-header-cell>
+        <mat-cell *matCellDef="let element">{{element.userType}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+           <button [disabled]="role==='NormalUser'" mat-icon-button (click)="onEdit(row)" data-toggle="modal" data-target="#exampleModal"><mat-icon>launch</mat-icon></button> 
+          <button [disabled]="role==='NormalUser'" mat-icon-button color="warn" (click)="deleteEmployeeDetail(row)"><mat-icon>delete_outline</mat-icon></button>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="loading">
+        <mat-footer-cell *matFooterCellDef colspan="6">
+          Loading data...
+        </mat-footer-cell>
+      </ng-container>
+      <ng-container matColumnDef="noData">
+        <mat-footer-cell *matFooterCellDef colspan="6">
+          No data.
+        </mat-footer-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      
+      <mat-footer-row *matFooterRowDef="['loading']" [ngClass]="{'hide':listData!=null}"></mat-footer-row>
+      <mat-footer-row *matFooterRowDef="['noData']" [ngClass]="{'hide':!(listData!=null && listData.data.length==0)}"></mat-footer-row>
+      </mat-table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="5" showFirstLastButtons></mat-paginator>
+  
+  </div>
+  
+  <!-- Add Customer Code here -->
+  <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    Launch demo modal
+  </button> -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Users Details</h5>
+               
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+              <form [formGroup]="service.form" (submit)="onSubmit()" class="normal-form">
+                <mat-grid-list cols="2" rowHeight="300px">
+                  <mat-grid-tile>
+                    <div class="controles-container">
+                   <!-- <input type="hidden" formControlName="CustomerId" >
+                    -->
+                      <mat-form-field>
+                        <input formControlName="FullName" matInput placeholder="Full Name*">
+                        <mat-error>This field is mandatory.</mat-error>
+                      </mat-form-field>
+                      <mat-form-field>
+                        <input formControlName="UserName" matInput placeholder="UserName">
+                        <mat-error>Invalid UserName .</mat-error>
+                      </mat-form-field>
+                      <mat-form-field>
+                        <input formControlName="Mobile" matInput placeholder="Mobile*">
+                        <mat-error *ngIf="service.form.controls['Mobile'].errors?.required">This field is mandatory.</mat-error>
+                        <mat-error *ngIf="service.form.controls['Mobile'].errors?.minlength">Minimum 8 charactors needed.</mat-error>
+                      </mat-form-field>
+                      <mat-form-field appearance="fill">
+                        <mat-label>Select UserType</mat-label>
+                        <mat-select formControlName="UserType">
+                            <mat-option value="admin">Admin</mat-option>
+                            <mat-option value="normalUser">Normal User</mat-option>
+                            <mat-option value="employee">Employee</mat-option>
+                          
+                        </mat-select>
+                      </mat-form-field>
+                      <!-- <mat-form-field>
+                        <input formControlName="Address" matInput placeholder="Address">
+                      </mat-form-field> -->
+                      <div class="button-row">
+                        <button  mat-raised-button color="primary" *ngIf="showAdd" type="submit" [disabled]="service.form.invalid">Submit</button>
+                        <button [disabled]="role==='employee'" type="button" *ngIf="showUpdate" (click)="editEmployeeDetail()" class="btn btn-primary" [disabled]="service.form.invalid">Update</button>
+                        <button [disabled]="role==='employee'" mat-raised-button color="warn" (click)="onClear()">Clear</button> 
+                      </div>
+                    </div>
+                  </mat-grid-tile>
+                </mat-grid-list>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" id="cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- Model code end here -->

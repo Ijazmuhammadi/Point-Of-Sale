@@ -1,0 +1,128 @@
+<div class="search-div">
+    <button mat-raised-button (click)="clickAddEmployee()" data-toggle="modal" data-target="#exampleModal">
+       <mat-icon>add</mat-icon>Create New
+    </button>
+    <mat-form-field class="search-form-field" floatLabel="never">
+      <input matInput [(ngModel)]="searchKey" placeholder="Search" autocomplete="off" (keyup)="applyFilter()">
+      <button mat-button matSuffix mat-icon-button aria-label="Clear"*ngIf="searchKey"  (click)="onSearchClear()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+  
+<mat-card class="font-weight-bold">Products Data</mat-card>
+  <div class="mat-elevation-z8">
+    <mat-table [dataSource]="listData"  matSort>
+      <ng-container matColumnDef="productID">
+        <mat-header-cell *matHeaderCellDef  mat-sort-header>Product Id</mat-header-cell>
+        <mat-cell *matCellDef="let element">{{element.productID}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="productName">
+        <mat-header-cell *matHeaderCellDef  mat-sort-header>Product Name</mat-header-cell>
+        <mat-cell *matCellDef="let element">{{element.productName}}</mat-cell>
+      </ng-container>
+     
+      <ng-container matColumnDef="unit_Price">
+        <mat-header-cell *matHeaderCellDef  mat-sort-header>Unit_Price #</mat-header-cell>
+        <mat-cell *matCellDef="let element">{{element.unit_Price}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="quantity">
+        <mat-header-cell *matHeaderCellDef  mat-sort-header>Quantity</mat-header-cell>
+        <mat-cell *matCellDef="let element">{{element.quantity}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="categoryName">
+        <mat-header-cell *matHeaderCellDef  mat-sort-header>Category Name</mat-header-cell>
+        <mat-cell *matCellDef="let element">{{element.categoryName}}</mat-cell>
+      </ng-container>
+     
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+           <button mat-icon-button (click)="onEdit(row)" data-toggle="modal" data-target="#exampleModal"><mat-icon>launch</mat-icon></button> 
+          <button mat-icon-button color="warn" (click)="deleteEmployeeDetail(row)"><mat-icon>delete_outline</mat-icon></button>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="loading">
+        <mat-footer-cell *matFooterCellDef colspan="6">
+          Loading data...
+        </mat-footer-cell>
+      </ng-container>
+      <ng-container matColumnDef="noData">
+        <mat-footer-cell *matFooterCellDef colspan="6">
+          No data.
+        </mat-footer-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      
+      <mat-footer-row *matFooterRowDef="['loading']" [ngClass]="{'hide':listData!=null}"></mat-footer-row>
+      <mat-footer-row *matFooterRowDef="['noData']" [ngClass]="{'hide':!(listData!=null && listData.data.length==0)}"></mat-footer-row>
+      </mat-table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="5" showFirstLastButtons></mat-paginator>
+  
+  </div>
+  
+  <!-- ADD Code here -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Product Details</h5>
+               
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+              <form [formGroup]="service.form" (submit)="onSubmit()" class="normal-form">
+                <mat-grid-list cols="2" rowHeight="300px">
+                  <mat-grid-tile>
+                    <div class="controles-container">
+                   <!-- <input type="hidden" formControlName="CustomerId" >
+                    -->
+                      <mat-form-field>
+                        <input formControlName="ProductName" matInput placeholder="Product Name*">
+                        <mat-error>This field is mandatory.</mat-error>
+                      </mat-form-field>
+                     
+                      <mat-form-field>
+                        <input formControlName="Unit_Price" matInput placeholder="Unit_Price">
+                        <mat-error>This field is mandatory.</mat-error>
+                      </mat-form-field>
+                      <mat-form-field>
+                        <input formControlName="Quantity" matInput placeholder="Quantity">
+                        <mat-error>This field is mandatory.</mat-error>
+                      </mat-form-field>
+                   
+                    </div>
+                  </mat-grid-tile>
+                  <mat-grid-tile>
+                    <div class="controles-container">
+                    
+                      <mat-form-field appearance="fill">
+                        <mat-label>Category Name</mat-label>
+                        <mat-select formControlName="CategoryID">
+                          <mat-option *ngFor="let custobj of customeobj" [value]="custobj.categoryID">
+                            {{custobj.categoryName}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      <div class="button-row">
+                        <button mat-raised-button color="primary" *ngIf="showAdd" type="submit" [disabled]="service.form.invalid">Submit</button>
+                        <button type="button" *ngIf="showUpdate" (click)="editOrderDetail()" class="btn btn-primary" [disabled]="service.form.invalid">Update</button>
+                        <button mat-raised-button color="warn" (click)="onClear()">Clear</button> 
+                      </div>
+                    </div>
+                  </mat-grid-tile>
+                </mat-grid-list>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" id="cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- Model code end here -->
+  

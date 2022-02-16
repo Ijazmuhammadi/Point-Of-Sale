@@ -1,0 +1,93 @@
+<div class="search-div">
+    <button mat-raised-button (click)="clickAddCategory()" data-toggle="modal" data-target="#exampleModal">
+       <mat-icon>add</mat-icon>Create New
+    </button>
+    <mat-form-field class="search-form-field" floatLabel="never">
+      <input matInput [(ngModel)]="searchKey" placeholder="Search" autocomplete="off" (keyup)="applyFilter()">
+      <button mat-button matSuffix mat-icon-button aria-label="Clear"*ngIf="searchKey"  (click)="onSearchClear()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+  <mat-card class="font-weight-bold">Order Data</mat-card>
+  <div class="mat-elevation-z8">
+    <mat-table [dataSource]="listData"  matSort>
+      <ng-container matColumnDef="categoryID">
+        <mat-header-cell *matHeaderCellDef  mat-sort-header>Category Id</mat-header-cell>
+        <mat-cell *matCellDef="let element">{{element.categoryID}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="categoryName">
+        <mat-header-cell *matHeaderCellDef  mat-sort-header>Category Name</mat-header-cell>
+        <mat-cell *matCellDef="let element">{{element.categoryName}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+           <button mat-icon-button (click)="onEdit(row)" data-toggle="modal" data-target="#exampleModal"><mat-icon>launch</mat-icon></button> 
+          <button mat-icon-button color="warn" (click)="deleteCategoryDetail(row)"><mat-icon>delete_outline</mat-icon></button>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="loading">
+        <mat-footer-cell *matFooterCellDef colspan="6">
+          Loading data...
+        </mat-footer-cell>
+      </ng-container>
+      <ng-container matColumnDef="noData">
+        <mat-footer-cell *matFooterCellDef colspan="6">
+          No data.
+        </mat-footer-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      
+      <mat-footer-row *matFooterRowDef="['loading']" [ngClass]="{'hide':listData!=null}"></mat-footer-row>
+      <mat-footer-row *matFooterRowDef="['noData']" [ngClass]="{'hide':!(listData!=null && listData.data.length==0)}"></mat-footer-row>
+      </mat-table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="5" showFirstLastButtons></mat-paginator>
+  
+  </div>
+  
+  <!-- ADD Code here -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Category Details</h5>
+               
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+              <form [formGroup]="service.form" (submit)="onSubmit()" class="normal-form">
+                <mat-grid-list cols="2" rowHeight="300px">
+                  <mat-grid-tile>
+                    <div class="controles-container">
+                   
+                      <mat-form-field>
+                        <input formControlName="CategoryName" matInput placeholder="Category Name*">
+                        <mat-error>This field is mandatory.</mat-error>
+                      </mat-form-field>
+                     </div>
+                  </mat-grid-tile>
+                  <mat-grid-tile>
+                    <div class="controles-container">
+                      <div class="button-row">
+                        <button mat-raised-button color="primary" *ngIf="showAdd" type="submit" [disabled]="service.form.invalid">Submit</button>
+                        <button type="button" *ngIf="showUpdate" (click)="editCategoryDetail()" class="btn btn-primary" [disabled]="service.form.invalid">Update</button>
+                        <button mat-raised-button color="warn" (click)="onClear()">Clear</button> 
+                      </div>
+                    </div>
+                  </mat-grid-tile>
+                </mat-grid-list>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" id="cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- Model code end here -->
+  
